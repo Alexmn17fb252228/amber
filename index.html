@@ -37,16 +37,12 @@ h1::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
 .stat-card{background:var(--surface);border-radius:var(--radius-sm);padding:14px 6px}
 .stat-val{font-size:28px;font-weight:250;color:var(--accent);letter-spacing:-0.02em;line-height:1.1}
-.heatmap{display:flex;align-items:center;gap:2px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);justify-content:center}
-.heat-dot{width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);transition:all .3s}
-.heat-dot.l0{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
-.heat-dot.l1{background:rgba(240,165,74,.18);border-color:rgba(240,165,74,.28)}
-.heat-dot.l2{background:rgba(240,165,74,.25);border-color:rgba(240,165,74,.35)}
-.heat-dot.l3{background:rgba(240,165,74,.45);border-color:rgba(240,165,74,.55)}
-.heat-dot.l4{background:rgba(240,165,74,.7);border-color:rgba(240,165,74,.8);box-shadow:0 0 8px var(--accent-glow)}
-.heat-label{font-size:9px;color:var(--dim);text-align:center;width:24px;margin-top:4px}
+.heatmap{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-top:14px;padding-top:18px;border-top:1px solid var(--border);min-height:100px}
+.heat-col{display:flex;flex-direction:column;align-items:center;gap:2px;width:32px}
+.heat-ghost{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);flex-shrink:0;margin:3px 0}
+.heat-amber{width:10px;height:10px;border-radius:50%;background:var(--accent);opacity:.85;flex-shrink:0}
+.heat-label{font-size:10px;color:var(--dim);text-align:center;width:32px;margin-top:6px;flex-shrink:0}
 .log-table{width:100%;font-size:12px;border-collapse:collapse}.log-table th,.log-table td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}.log-table th{color:var(--dim);font-weight:500;font-size:11px}.log-table td{color:var(--text)}.log-table .log-date{text-align:left;color:var(--dim);white-space:nowrap}.log-row:hover{background:rgba(255,255,255,.02)}.log-empty{color:var(--dim);font-size:13px;text-align:center;padding:16px}.log-toggle{font-size:13px;color:var(--accent);cursor:pointer;margin-top:12px;display:inline-block}
-.heat-col{display:flex;flex-direction:column;align-items:center;gap:4px}
 .stat-label{font-size:11px;color:var(--dim);margin-top:4px}
 .alt-btn{display:flex;align-items:center;gap:12px;width:100%;padding:15px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:8px;-webkit-tap-highlight-color:transparent}
 .alt-btn:last-child{margin-bottom:0}
@@ -548,14 +544,17 @@ function renderHeatmap(){
   const today=new Date(),dow=today.getDay(),daysSinceMon=dow===0?6:dow-1;
   const mon=new Date(today.getFullYear(),today.getMonth(),today.getDate()-daysSinceMon);
   const dayLabels=['一','二','三','四','五','六','日'],log=currentData().log||{};
-  const days=[];
+  let html='';
   for(let i=0;i<7;i++){
     const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
     const k=d.toISOString().slice(0,10),entry=log[k]||{};
-    days.push({label:dayLabels[i],val:(entry.urge||0)+(entry.memos||0)+(entry.erp||0)+(entry.restructure||0)})}
-  const max=Math.max(1,...days.map(d=>d.val));
-  const html=days.map(d=>{let lvl=0;if(d.val>0){lvl=Math.ceil((d.val/max)*4)}
-    return'<div class=heat-col><div class="heat-dot l'+lvl+'" title="'+d.val+' 次活动"></div><div class=heat-label>'+d.label+'</div></div>'}).join('');
+    const total=(entry.urge||0)+(entry.memos||0)+(entry.erp||0)+(entry.restructure||0);
+    const n=Math.floor(total/4);
+    let col='';
+    for(let j=0;j<n;j++)col+='<div class=heat-amber></div>';
+    col+='<div class=heat-ghost></div><div class=heat-label>'+dayLabels[i]+'</div>';
+    html+='<div class=heat-col>'+col+'</div>';
+  }
   el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
 function updateDashboard(){
   try{
