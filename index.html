@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+CiAgPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIHJ4PSIzNiIgZmlsbD0iIzBhMGEwYyIvPgogIDxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjQ4IiBmaWxsPSIjZjBhNTRhIiBvcGFjaXR5PSIwLjkiLz4KICA8Y2lyY2xlIGN4PSI5MCIgY3k9IjkwIiByPSI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjBhNTRhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMyIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iNzIiIHI9IjYiIGZpbGw9IiMwYTBhMGMiIG9wYWNpdHk9IjAuMTUiLz4KPC9zdmc+">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+CiAgPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIHJ4PSIzNiIgZmlsbD0iIzBhMGEwYyIvPgogIDxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjQ4IiBmaWxsPSIjZjBhNTRhIiBvcGFjaXR5PSIwLjkiLz4KICA8Y2lyY2xlIGN4PSI5MCIgY3k9IjkwIiByPSI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjBhNTRhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMyIvPgogIDxjaXJjbGUgY3g9IjY4IiBjeT0iNzIiIHI9IjYiIGZpbGw9IiMwYTBhMGMiIG9wYWNpdHk9IjAuMTUiLz4KPC9zdmc+">
+
+<title>琥珀</title>
+<style>
+:root{--bg:#0a0a0c;--surface:#131316;--card:#1a1a1f;--border:#26262c;--text:#d4d4d8;--dim:#71717a;--accent:#f0a54a;--accent-glow:rgba(240,165,74,0.12);--rain:#8bb4c7;--on:#4a9e4a;--off:#b05050;--radius:14px;--radius-sm:10px;--font:"SF Pro Text",-apple-system,"Helvetica Neue",sans-serif;--tab-h:64px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 20px);-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;line-height:1.5}
+.page{display:none;padding:max(20px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) 20px max(18px,env(safe-area-inset-left))}
+.page.active{display:block}
+header{margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start}
+h1{font-size:26px;font-weight:590;letter-spacing:-0.02em;color:#f4f4f5;display:flex;align-items:center;gap:8px}
+h1::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+.subtitle{color:var(--dim);font-size:13px;margin-top:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:12px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.card-title{font-size:16px;font-weight:590;color:#e4e4e7}
+.ring-num{font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--accent);padding:3px 10px;background:var(--accent-glow);border-radius:20px}
+.card-header-right{display:flex;align-items:center;gap:10px}
+.timer-box{text-align:center;padding:8px 0}
+.timer-status{font-size:13px;color:var(--dim);margin-bottom:8px;transition:color .3s}
+.timer-clock{font-size:48px;font-weight:200;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;color:var(--dim);transition:color .4s,transform .4s}
+.timer-clock.active{color:var(--accent);transform:scale(1.04)}
+.btn{padding:10px 24px;border-radius:22px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit;-webkit-tap-highlight-color:transparent;user-select:none}
+.btn:active{transform:scale(.96);border-color:var(--accent)}
+.btn-primary{background:var(--accent);color:#0a0a0c;border-color:var(--accent);font-weight:590}
+.btn-primary:active{box-shadow:0 0 20px var(--accent-glow)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.stat-card{background:var(--surface);border-radius:var(--radius-sm);padding:14px 6px}
+.stat-val{font-size:28px;font-weight:250;color:var(--accent);letter-spacing:-0.02em;line-height:1.1}
+.heatmap{display:flex;align-items:center;gap:2px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);justify-content:center}
+.heat-dot{width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);transition:all .3s}
+.heat-dot.l0{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
+.heat-dot.l1{background:rgba(240,165,74,.18);border-color:rgba(240,165,74,.28)}
+.heat-dot.l2{background:rgba(240,165,74,.25);border-color:rgba(240,165,74,.35)}
+.heat-dot.l3{background:rgba(240,165,74,.45);border-color:rgba(240,165,74,.55)}
+.heat-dot.l4{background:rgba(240,165,74,.7);border-color:rgba(240,165,74,.8);box-shadow:0 0 8px var(--accent-glow)}
+.heat-label{font-size:9px;color:var(--dim);text-align:center;width:24px;margin-top:4px}
+.log-table{width:100%;font-size:12px;border-collapse:collapse}.log-table th,.log-table td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}.log-table th{color:var(--dim);font-weight:500;font-size:11px}.log-table td{color:var(--text)}.log-table .log-date{text-align:left;color:var(--dim);white-space:nowrap}.log-row:hover{background:rgba(255,255,255,.02)}.log-empty{color:var(--dim);font-size:13px;text-align:center;padding:16px}.log-toggle{font-size:13px;color:var(--accent);cursor:pointer;margin-top:12px;display:inline-block}
+.heat-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stat-label{font-size:11px;color:var(--dim);margin-top:4px}
+.alt-btn{display:flex;align-items:center;gap:12px;width:100%;padding:15px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:8px;-webkit-tap-highlight-color:transparent}
+.alt-btn:last-child{margin-bottom:0}
+.alt-btn:active{transform:scale(.97);border-color:var(--accent);background:var(--card)}
+.alt-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.alt-row:last-child{margin-bottom:0}
+.alt-row .alt-btn{flex:1;margin-bottom:0}
+.edit-action-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;font-family:var(--font)}
+.edit-action-btn:active{transform:scale(.9);border-color:var(--accent);color:var(--accent)}
+.alt-edit-input{flex:1;background:var(--surface);border:1px solid var(--accent);border-radius:8px;color:var(--text);padding:12px 14px;font-size:15px;font-family:inherit;outline:none}
+.alt-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.sep-day{text-align:center}
+.sep-indicator{display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:500;transition:all .3s}
+.sep-indicator.on{background:rgba(74,158,74,.14);color:#8cc88c}
+.sep-indicator.off{background:rgba(176,80,80,.1);color:#d49090}
+.sep-dot{width:9px;height:9px;border-radius:50%;transition:background .3s}
+.sep-dot.on{background:#8cc88c;box-shadow:0 0 8px rgba(140,200,140,.5)}
+.sep-dot.off{background:#d49090;box-shadow:0 0 6px rgba(212,144,144,.3)}
+.sep-sub{color:var(--dim);font-size:13px;margin-top:8px}
+.input-field{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:12px 14px;font-size:14px;font-family:inherit;line-height:1.5;transition:border-color .2s,box-shadow .2s;outline:none;margin-bottom:8px}
+.input-field:focus{border-color:var(--rain);box-shadow:0 0 0 3px rgba(139,180,199,.08)}
+.input-field::placeholder{color:var(--dim);opacity:.6}
+textarea.input-field{min-height:88px;resize:vertical}
+.whitelist{display:flex;flex-direction:column;gap:2px}
+.whitelist-item{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:14px;color:#a1a1aa}
+.whitelist-item:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04)}
+.wl-del-btn:hover{opacity:1 !important;color:#d49090 !important}
+.whitelist-dot{width:8px;height:8px;border-radius:50%;background:var(--on);flex-shrink:0;box-shadow:0 0 6px rgba(74,158,74,.4)}
+.help-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:13px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;margin-left:6px;font-family:var(--font);line-height:1}
+.help-btn:active{transform:scale(.9);border-color:var(--accent);color:var(--accent)}
+.help-btn.on{background:var(--accent);color:#0a0a0c;border-color:var(--accent)}
+.help-text{max-height:0;overflow:hidden;opacity:0;transform:translateY(-6px);transition:max-height .35s,opacity .25s,transform .25s;font-size:13px;color:var(--rain);line-height:1.7;padding:0 14px;margin:0;border-left:2px solid var(--rain)}
+.help-text.open{max-height:120px;opacity:1;transform:translateY(0);padding:4px 14px;margin:10px 0 4px}
+.about-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .45s,opacity .3s,margin .3s;font-size:13px;color:var(--text);line-height:1.8;margin:0}
+.about-body.open{max-height:420px;opacity:1;margin-top:16px}
+.about-arrow{font-size:14px;color:var(--dim);transition:transform .3s;display:inline-block}
+.about-arrow.open{transform:rotate(90deg)}
+.settings-panel{max-height:0;overflow:hidden;opacity:0;transition:max-height .4s,opacity .3s,margin .3s;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:0;padding:0 20px}
+.settings-panel.open{max-height:400px;opacity:1;margin-bottom:12px;padding:20px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+.storage-bar-wrap{height:4px;background:var(--surface);border-radius:2px;margin-top:8px;overflow:hidden}
+.storage-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s;max-width:100%}
+.storage-label{font-size:10px;color:var(--dim);margin-top:4px}
+.setting-row:not(:last-of-type){border-bottom:1px solid rgba(255,255,255,.04)}
+.setting-label{font-size:14px;font-weight:500;color:#e4e4e7}
+.setting-desc{font-size:11px;color:var(--dim);margin-top:2px}
+.setting-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;font-size:14px;font-family:inherit;outline:none;cursor:pointer;min-width:80px;text-align:center}
+.setting-select:focus{border-color:var(--accent)}
+.time-input-row{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--dim)}
+.time-input{width:48px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 4px;font-size:14px;font-family:inherit;text-align:center;outline:none}
+.time-input:focus{border-color:var(--accent)}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:transparent;border:none;color:var(--dim);font-size:10px;font-weight:500;cursor:pointer;transition:color .2s;font-family:var(--font);-webkit-tap-highlight-color:transparent}
+.tab.active{color:var(--accent)}
+.tab-icon{font-size:20px;line-height:1}
+.hint{color:var(--dim);font-size:12px;line-height:1.6;margin-bottom:12px}
+.tag{font-size:11px;color:var(--dim)}
+.inline-between{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.inline-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.memo-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--dim);font-size:12px}
+.memo-saved{color:var(--on);opacity:0;transition:opacity .3s}
+.memo-history{max-height:0;overflow:hidden;transition:max-height .3s}.memo-history.open{max-height:400px;overflow-y:auto}
+.memo-item{padding:12px;background:var(--surface);border-radius:8px;margin-bottom:8px;font-size:13px;line-height:1.6}
+.memo-item-time{font-size:11px;color:var(--dim);margin-bottom:4px}
+.memo-saved.visible{opacity:1}
+.undo-bar{position:fixed;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 20px);left:50%;transform:translateX(-50%) translateY(20px);background:#2a2a30;border:1px solid var(--border);padding:8px 16px;border-radius:22px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:12px;opacity:0;pointer-events:none;z-index:150;transition:opacity .25s,transform .25s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.undo-bar.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.undo-link{color:var(--accent);font-weight:500;cursor:pointer;border:none;background:transparent;font-family:inherit;font-size:13px;padding:0}
+.toast{position:fixed;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:#2a2a30;border:1px solid var(--border);padding:12px 22px;border-radius:24px;font-size:13px;font-weight:500;color:var(--text);opacity:0;pointer-events:none;z-index:200;transition:opacity .25s,transform .25s;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.lock-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,12,.94);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+</style>
+</head>
+<body>
+
+<div class="page active" id="page-daily">
+  <header><div><h1 onclick="openAbout()" style="cursor:pointer" title="关于琥珀">琥珀</h1><div class="subtitle">不戒掉想念。只把想念凝成琥珀。</div></div></header>
+  <div class="card" style="background:linear-gradient(135deg,#1a1a1f 0%,#1e1e24 100%)">
+    <div class="card-header"><span class="card-title">时间盒子</span><span class="card-header-right"><span class="ring-num">RING 2</span><button class="help-btn" onclick="toggleHelp(event,'help2')">?</button></span></div>
+    <div class="help-text" id="help2">怎么用：在偏好设置里设定每天想她的时间窗口（默认 22:00–22:30）。时间到了盒子自动打开，结束后自动关上。白天突然想到她——告诉自己「晚上再想」。作用：把无边界的内耗关进一个有边界的盒子。</div>
+    <div class="timer-box"><div class="timer-status" id="timer-status">距离十点 — 盒子还没开门</div><div class="timer-clock" id="timer-clock">--:--</div><div style="margin-top:14px"><button class="btn btn-primary" id="open-box-btn" style="display:none">可以想她了 · 开门</button></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">今日统计</span></div>
+    <div class="stats"><div class="stat-card"><div class="stat-val" id="stat-urges">0</div><div class="stat-label">冲动已按住</div></div><div class="stat-card"><div class="stat-val" id="stat-memos">0</div><div class="stat-label">存稿</div></div><div class="stat-card"><div class="stat-val" id="stat-days">0</div><div class="stat-label">连续天数</div></div></div>
+    <div class="heatmap" id="heatmap"></div>
+    <div class="log-toggle" onclick="toggleLog()" id="log-toggle">展开记录 ▼</div>
+    <div id="log-table-wrap" style="display:none;margin-top:12px;max-height:340px;overflow-y:auto"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">替代动作</span><span class="card-header-right"><span class="ring-num">RING 4</span><button class="help-btn" onclick="toggleHelp(event,'help4')">?</button></span></div>
+    <div class="help-text" id="help4">怎么用：想给她发消息的冲动上来的那一刻，立刻点下面三个按钮中的一个，然后去做。点击文字可以自定义替代动作。作用：冲动峰值只有几分钟，做完事它就自己消退了。</div>
+    <div id="alt-actions-list">
+      <div class="alt-row" id="alt-row-0"><button class="alt-btn" id="alt-btn-0" onclick="altAction(0)"><span class="alt-icon">🎸</span><span class="alt-label" id="alt-label-0">爬格子 10 分钟</span></button><button class="edit-action-btn" onclick="editAlt(0)" aria-label="编辑">✎</button></div>
+      <div class="alt-row" id="alt-row-1"><button class="alt-btn" id="alt-btn-1" onclick="altAction(1)"><span class="alt-icon">🏋️</span><span class="alt-label" id="alt-label-1">拿哑铃练一组</span></button><button class="edit-action-btn" onclick="editAlt(1)" aria-label="编辑">✎</button></div>
+      <div class="alt-row" id="alt-row-2"><button class="alt-btn" id="alt-btn-2" onclick="altAction(2)"><span class="alt-icon">✍️</span><span class="alt-label" id="alt-label-2">写文章的一段</span></button><button class="edit-action-btn" onclick="editAlt(2)" aria-label="编辑">✎</button></div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--dim)">点 ✎ 编辑文字，修改后按回车保存。</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">身份分离日</span><span class="card-header-right"><span class="ring-num">RING 5</span><button class="help-btn" onclick="toggleHelp(event,'help5')">?</button></span></div>
+    <div class="help-text" id="help5">怎么用：在偏好设置里设定每周的分离日（默认周日）。那一天一整天不碰她的头像、不听太阳雨、不翻聊天记录。手痒了——打开备忘录写下来。作用：每周证明一次，没有她也能正常过完一天。</div>
+    <div class="sep-day"><div class="sep-indicator" id="sep-indicator"><div class="sep-dot" id="sep-dot"></div><span id="sep-text">检测中</span></div><div class="sep-sub" id="sep-sub"></div></div>
+  </div>
+</div>
+
+<div class="page" id="page-practice">
+  <header><div><h1>练习</h1><div class="subtitle">应急工具。想她想到受不了的时候打开。</div></div></header>
+  <div class="card">
+    <div class="card-header"><span class="card-title">备忘录 · 输出转存</span><span class="card-header-right"><span class="ring-num">RING 1</span><button class="help-btn" onclick="toggleHelp(event,'help1')">?</button></span></div>
+    <div class="help-text" id="help1">怎么用：把想对她说的话打进来，Cmd+Enter 保存。打完就关掉，不要回看。作用：冲动变成文字，就不需要再变成消息。</div>
+    <textarea class="input-field" id="memo" placeholder="凌晨两点。今天路过那家店，没进去。" oninput="document.getElementById('memo-btn').style.display=this.value.trim()?'block':'none'"></textarea>
+    <button class="btn btn-primary" id="memo-btn" style="display:none;width:100%;margin-bottom:8px" onclick="addMemo()">保存存稿</button>
+    <div class="memo-meta"><span id="memo-count">存稿 0 条</span><span class="memo-saved" id="memo-saved">✓ 已存</span><button class="btn" style="padding:4px 12px;font-size:11px;margin-left:8px" onclick="toggleMemoHistory()">查看</button></div>
+    <div class="memo-history" id="memo-history"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">最坏情况练习 · ERP</span><span class="card-header-right"><span class="ring-num">RING 6</span><button class="help-btn" onclick="toggleHelp(event,'help6')">?</button></span></div>
+    <div class="help-text" id="help6">怎么用：输入最坏的情况，Cmd+Enter 确认。写完之后不找任何安慰——不翻聊天记录、不找我分析。作用：暴露在最坏恐惧里但不逃跑，焦虑会自己降下来。临床验证过的方法。</div>
+    <div class="hint">把最坏情况写出来，坐在这不舒服里。</div>
+    <input class="input-field" id="worst-input" placeholder="她再也不会找我。她跟别人在一起了。" oninput="document.getElementById('erp-btn').style.display=this.value.trim()?'block':'none'">
+    <div style="margin-top:8px"><button class="btn btn-primary" id="erp-btn" onclick="confirmERP()" style="display:none;width:100%">确认练习</button></div>
+    <div class="inline-between" style="margin-top:10px"><span class="tag" id="worst-count">练习 0 次</span><span class="tag" style="cursor:pointer;color:var(--accent)" onclick="toggleErpHistory()">查看记录</span></div>
+    <div class="memo-history" id="erp-history"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">想法纠正 · 认知重构</span><span class="card-header-right"><span class="ring-num">RING 7</span><button class="help-btn" onclick="toggleHelp(event,'help7')">?</button></span></div>
+    <div class="help-text" id="help7">怎么用：上面写扭曲想法，下面写更接近事实的回应，点保存。作用：自动思维是习惯不是真相。每替换一次，新的神经通路就加固一层。</div>
+    <div class="hint">上半行写扭曲想法。下半行写更接近事实的平静回应。</div>
+    <input class="input-field" id="auto-thought" placeholder="自动想法：她不找我就是不在意我" oninput="var a=document.getElementById('auto-thought').value.trim(),b=document.getElementById('balanced-thought').value.trim();document.getElementById('rest-btn').style.display=(a&&b)?'inline-block':'none'">
+    <input class="input-field" id="balanced-thought" placeholder="更接近事实：她连男朋友都不怎么回。" oninput="var a=document.getElementById('auto-thought').value.trim(),b=document.getElementById('balanced-thought').value.trim();document.getElementById('rest-btn').style.display=(a&&b)?'inline-block':'none'">
+    <div class="inline-between"><span class="tag" id="restructure-count">重构 0 次</span><button class="btn btn-primary" id="rest-btn" style="display:none;padding:6px 18px;font-size:13px" onclick="saveRestructure()">保存重构</button></div>
+    <div style="margin-top:8px;text-align:right"><span class="tag" style="cursor:pointer;color:var(--accent)" onclick="toggleRestHistory()">查看记录</span></div>
+    <div class="memo-history" id="rest-history"></div>
+  </div>
+</div>
+
+<div class="page" id="page-settings">
+  <header><div><h1>设置</h1><div class="subtitle">白名单 · 备份 · 偏好</div></div></header>
+  <div class="card" style="border-color:rgba(240,165,74,.15)">
+    <div class="card-header" onclick="toggleAbout()" style="cursor:pointer">
+      <span class="card-title">🟠 关于琥珀</span>
+      <span class="about-arrow" id="about-arrow">▸</span>
+    </div>
+    <div class="about-body" id="about-body">
+      <div style="font-size:13px;color:var(--text);line-height:1.8">
+        琥珀不是用来戒掉想念的。是想念太多了，需要给它一个形状。
+      </div>
+      <div style="margin-top:16px;font-size:12px;line-height:1.8">
+        <div style="color:var(--accent);font-weight:590;margin-bottom:6px">理论基础：七环 CBT</div>
+        这个工具依赖三种临床验证过的 CBT 方法：<br>
+        · <b>刺激控制</b>（时间盒子 + 分离日）——把无边界的想念关进有边界的盒子里<br>
+        · <b>暴露反应预防</b>（ERP）——面对最坏恐惧但不逃跑，焦虑会自己降下来<br>
+        · <b>认知重构</b>——自动思维是习惯不是真相。每替换一次，神经通路就加固一层
+      </div>
+      <div style="margin-top:14px;font-size:12px;line-height:1.8">
+        <div style="color:var(--accent);font-weight:590;margin-bottom:6px">三个动作</div>
+        备忘录 → <b>倾泻</b>。冲动变成文字，就不需要再变成消息。<br>
+        ERP → <b>暴露</b>。一句话写出最坏恐惧，坐在这不找安慰。<br>
+        重构 → <b>替换</b>。用更接近事实的回应，覆盖扭曲的自动想法。
+      </div>
+      <div style="margin-top:14px;font-size:12px;line-height:1.8">
+        <div style="color:var(--accent);font-weight:590;margin-bottom:6px">名字</div>
+        琥珀是树脂的化石。树脂是树受伤时流出来的——透明的、流动的、擦不干净。几千万年后凝固成了石头，里面的东西被完整保存但不再疼了。<br><br>这和想念是同一回事。
+      </div>
+    </div>
+  </div>
+  <div class="card" style="border-color:rgba(240,165,74,.15)">
+    <div class="card-header"><span class="card-title">存储空间</span></div>
+    <div class="storage-bar-wrap"><div class="storage-bar-fill" id="storage-bar" style="width:0%"></div></div>
+    <div class="storage-label" id="storage-label">计算中...</div>
+  </div>
+  <div class="card" style="border-color:rgba(176,80,80,.15)">
+    <div class="card-header"><span class="card-title">⚠️ 数据丢失警告</span></div>
+    <div style="font-size:12px;color:#d49090;line-height:1.7">
+      你的所有数据<b>只存在手机本地</b>，以下操作会<b>永久清除</b>琥珀的全部数据且无法恢复：
+    </div>
+    <div style="font-size:12px;color:var(--dim);line-height:1.8;margin-top:8px;padding-left:4px">
+      ① iPhone 设置 → Safari → 清除历史记录与网站数据<br>
+      ② iPhone 设置 → 通用 → iPhone 存储 → Safari → 网站数据 → 删除<br>
+      ③ 主屏长按琥珀图标 → 删除 App（iOS 会同时删除其存储）<br>
+      ④ 连续 7 天不打开琥珀（iOS 15+ 可能自动清理）
+    </div>
+    <div style="font-size:12px;color:var(--accent);line-height:1.7;margin-top:8px">
+      唯一保护方式：<b>定期导出备份 JSON</b>，存到 iCloud 或文件 App。打开强制备份锁定（偏好设置），到期会自动锁屏提醒。
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">白名单触发</span><span class="card-header-right"><span class="ring-num">RING 3</span><button class="help-btn" onclick="toggleHelp(event,'help3')">?</button></span></div>
+    <div class="help-text" id="help3">怎么用：想给她发消息之前，先看一眼这里。属于其中一种吗？不属于——关掉微信。作用：把发消息从「我想她了」变成「我有新东西给她」，质量换数量。点击文字编辑，点击 ✕ 删除。最多 10 条。</div>
+    <div class="whitelist" id="whitelist-list"></div>
+    <button class="btn" id="wl-add-btn" onclick="addWhitelist()" style="width:100%;margin-top:10px;border-style:dashed;color:var(--dim);font-size:13px">+ 添加触发条件</button>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">备份 / 恢复</span></div>
+    <div class="hint">数据存在手机本地。每周备份到 iCloud 或文件 App。</div>
+    <div class="inline-row"><button class="btn" onclick="exportData()">导出 JSON</button><button class="btn" onclick="document.getElementById('import-file').click()">导入恢复</button></div>
+    <div class="inline-row" style="margin-top:8px"><button class="btn" onclick="copyReport()">📋 复制周报</button></div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    <div style="margin-top:10px" class="tag" id="backup-hint"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">数据管理</span></div>
+    <div class="hint">小心操作。建议先导出备份再清空。</div>
+    <div class="inline-row">
+      <button class="btn" id="clear-today-btn" onclick="clearToday()" style="color:#d49090;border-color:rgba(176,80,80,.3)">清空今日</button>
+      <button class="btn" id="clear-all-btn" onclick="clearAllStep1()" style="color:#d49090;border-color:rgba(176,80,80,.3)">清空全部</button>
+    </div>
+    <div id="clear-all-confirm" style="display:none;margin-top:10px;padding:10px;background:rgba(176,80,80,.08);border-radius:8px">
+      <div style="font-size:13px;color:#d49090;margin-bottom:8px">确认清空全部数据？此操作不可撤销。</div>
+      <div class="inline-row">
+        <button class="btn btn-primary" onclick="clearAll()" style="background:#b05050;border-color:#b05050">确认清空</button>
+        <button class="btn" onclick="document.getElementById('clear-all-confirm').style.display='none';document.getElementById('clear-all-btn').style.display='inline-block'">取消</button>
+      </div>
+    </div>
+  </div>
+  <button class="btn" style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px" onclick="toggleSettings()"><span style="font-size:18px">⚙</span> 偏好设置</button>
+  <div class="settings-panel" id="settings-panel">
+    <div class="setting-row"><div><div class="setting-label">盒子开门时间</div><div class="setting-desc">每天几点可以开始想她</div></div><div class="time-input-row"><input class="time-input" id="set-hour" type="number" min="0" max="23" value="22"> : <input class="time-input" id="set-min" type="number" min="0" max="59" step="5" value="00"></div></div>
+    <div class="setting-row"><div><div class="setting-label">盒子持续时长</div></div><select class="setting-select" id="set-dur"><option value="15">15 分钟</option><option value="30" selected>30 分钟</option><option value="45">45 分钟</option><option value="60">60 分钟</option></select></div>
+    <div class="setting-row"><div><div class="setting-label">分离日</div></div><select class="setting-select" id="set-sep"><option value="0" selected>周日</option><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option></select></div>
+    <div class="setting-row"><div><div class="setting-label">强制备份间隔</div><div class="setting-desc">超过几天未备份则锁定</div></div><select class="setting-select" id="set-backup-days"><option value="7" selected>7 天</option><option value="14">14 天</option><option value="30">30 天</option><option value="0">不强制</option></select></div>
+    <div style="margin-top:12px"><button class="btn btn-primary" onclick="saveSettings()" style="width:100%">保存设置</button></div>
+  </div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab active" onclick="switchTab('daily')" id="tab-daily"><span class="tab-icon">🌅</span>每日</button>
+  <button class="tab" onclick="switchTab('practice')" id="tab-practice"><span class="tab-icon">💭</span>练习</button>
+  <button class="tab" onclick="switchTab('settings')" id="tab-settings"><span class="tab-icon">⚙</span>设置</button>
+</nav>
+
+<div class="lock-overlay" id="backup-lock">
+  <div style="font-size:56px;margin-bottom:20px">🔒</div>
+  <div style="font-size:20px;font-weight:590;color:#f4f4f5;margin-bottom:8px">需要备份才能继续</div>
+  <div style="font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:28px;max-width:280px" id="backup-lock-msg"></div>
+  <button class="btn btn-primary" onclick="unlockViaBackup()" style="font-size:16px;padding:14px 40px">导出备份以解锁</button>
+  <div style="font-size:12px;color:var(--dim);margin-top:16px">备份文件请存到 iCloud 或文件 App。<br>锁定的目的：数据只存在你手机本地，清了 Safari 缓存就没了。定期备份是唯一的保险。</div>
+</div>
+
+<div class="undo-bar" id="undo-bar"><span id="undo-msg"></span><button class="undo-link" onclick="undoLast()">撤销</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SK='liming_zikong',SK_SET='liming_zikong_settings';
+let memos=[],consecutiveDays=0; // v2: daily counters stored in log{}
+let sBoxH=22,sBoxM=0,sBoxDur=30,sSepDay=0,sBackupDays=7;
+
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function ensureLog(){const raw=localStorage.getItem(SK),data=raw?JSON.parse(raw):{};data.log=data.log||{};const k=todayKey();data.log[k]=data.log[k]||{urge:0,memos:0,erp:0,restructure:0};return data}
+function load(){
+  try{const r=localStorage.getItem(SK);if(!r)return;let d=JSON.parse(r);
+    if(!d.v||d.v<2){d=migrateV2(d)} // auto-migrate v1
+    memos=d.memos||[];consecutiveDays=d.consecutiveDays||0;
+    if(d.date!==todayKey()){d=ensureLog();d.date=todayKey();saveRaw(d);renderHeatmap()} // reset daily counters for new day
+  }catch(e){}}
+function migrateV2(d){
+  const today=todayKey();
+  d.v=2;d.log=d.log||{};d.log[today]=d.log[today]||{urge:d.urgeCount||0,memos:(d.memos||[]).length,erp:d.worstCount||0,restructure:d.restructureCount||0};
+  d.memos=(d.memos||[]).map((m,i)=>({id:m.id||(m.time||today+'-'+i),text:m.text||'',time:m.time||today}));
+  delete d.urgeCount;delete d.worstCount;delete d.restructureCount;return d}
+function saveRaw(d){try{localStorage.setItem(SK,JSON.stringify(d))}catch(e){console.log('storage full')}}
+function currentData(){try{const r=localStorage.getItem(SK);return r?JSON.parse(r):{v:2,log:{},memos:[],consecutiveDays:0}}catch(e){return{v:2,log:{},memos:[],consecutiveDays:0}}}
+function save(){const d=currentData();d.memos=memos;d.consecutiveDays=consecutiveDays;d.date=todayKey();saveRaw(d);renderHeatmap()}
+function getLog(k){const d=currentData();d.log=d.log||{};d.log[k]=d.log[k]||{urge:0,memos:0,erp:0,restructure:0};return d}
+function incLog(field,entry){const k=todayKey(),d=getLog(k);d.log[k][field]=(d.log[k][field]||0)+1;if(entry){d.log[k].entries=d.log[k].entries||{};const ek=field+"_entries";d.log[k].entries[ek]=d.log[k].entries[ek]||[];d.log[k].entries[ek].push(entry)}saveRaw(d)}
+function decLog(field){const k=todayKey(),d=getLog(k);d.log[k][field]=Math.max(0,(d.log[k][field]||0)-1);saveRaw(d);renderHeatmap()}
+function readLog(field){const k=todayKey(),d=currentData();return(d.log||{})[k]?.[field]||0}
+function readTotal(field){const d=currentData();let t=0;for(const k of Object.keys(d.log||{})){t+=d.log[k][field]||0}return t}
+function T(msg){const e=document.getElementById('toast');e.textContent=msg;e.className='toast show';setTimeout(()=>e.className='toast',2000)}
+
+function switchTab(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');}
+
+function updateTimer(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes();
+  const boxEndH=sBoxH+Math.floor((sBoxM+sBoxDur)/60),boxEndM=(sBoxM+sBoxDur)%60;
+  let inBox=false;
+  const startMins=sBoxH*60+sBoxM,endMins=boxEndH*60+boxEndM,nowMins=h*60+m;
+  inBox=(endMins>startMins)?(nowMins>=startMins&&nowMins<endMins):(nowMins>=startMins||nowMins<endMins);
+  const clock=document.getElementById('timer-clock'),status=document.getElementById('timer-status'),btn=document.getElementById('open-box-btn');
+  clock.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  const startLabel=String(sBoxH).padStart(2,'0')+':'+String(sBoxM).padStart(2,'0');
+  if(inBox){clock.className='timer-clock active';btn.style.display='inline-block';
+    const left=(endMins>nowMins?endMins-nowMins:24*60-nowMins+endMins);
+    status.textContent='可以想她 · 还剩 '+left+' 分钟';}
+  else{clock.className='timer-clock';btn.style.display='none';
+    const dist=startMins>nowMins?startMins-nowMins:24*60-nowMins+startMins;
+    status.textContent='距离开门 · '+dist+' 分钟（每日 '+startLabel+' 开）';}}
+
+(function(){
+  const ta=document.getElementById('memo');
+  ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){addMemo();e.preventDefault()}});
+  ta.addEventListener('blur',function(){if(this.value.trim())addMemo()});})();
+function deleteLogEntry(field,date,time){
+  const d=currentData();const ek=field+'_entries';
+  const entries=(d.log||{})[date]?.entries?.[ek]||[];
+  d.log[date].entries[ek]=entries.filter(e=>e.time!==time);
+  d.log[date][field]=Math.max(0,(d.log[date][field]||0)-1);
+  saveRaw(d);T('已删除')}
+function getLogEntries(field){
+  const log=currentData().log||{};const all=[];
+  Object.keys(log).sort().reverse().forEach(k=>{
+    const e=(log[k].entries||{})[field+'_entries']||[];
+    e.forEach(item=>{all.push({date:k,...item})})});
+  return all.slice(0,50)}
+function toggleErpHistory(){
+  const h=document.getElementById('erp-history'),isOpen=h.classList.contains('open');
+  if(!isOpen){const entries=getLogEntries('erp');
+    h.innerHTML=entries.length?entries.map(e=>'<div class=memo-item><div class=memo-item-time>'+e.date+'</div>'+e.text.replace(/</g,'&lt;')+'</div>').join(''):'<div style="color:var(--dim);font-size:13px;padding:8px">没有 ERP 练习记录。</div>'}
+  h.classList.toggle('open')}
+function toggleRestHistory(){
+  const h=document.getElementById('rest-history'),isOpen=h.classList.contains('open');
+  if(!isOpen){const entries=getLogEntries('restructure');
+    h.innerHTML=entries.length?entries.map(e=>'<div class=memo-item><div class=memo-item-time>'+e.date+'</div><div style="color:#d49090;margin-bottom:4px">'+e.auto.replace(/</g,'&lt;')+'</div><div style="color:#8cc88c">'+e.balanced.replace(/</g,'&lt;')+'</div></div>').join(''):'<div style="color:var(--dim);font-size:13px;padding:8px">还没有认知重构记录。</div>'}
+  h.classList.toggle('open')}
+function toggleMemoHistory(){
+  const h=document.getElementById('memo-history'),isOpen=h.classList.contains('open');
+  if(!isOpen){renderMemoHistory()}h.classList.toggle('open')}
+function deleteMemo(id){memos=memos.filter(m=>m.id!==id);save();renderMemoHistory();T('已删除')}
+function renderMemoHistory(){
+  const h=document.getElementById('memo-history');
+  if(!memos.length){h.innerHTML='<div style="color:var(--dim);font-size:13px;padding:8px">还没有存稿。</div>';return}
+  h.innerHTML=memos.slice().reverse().map(m=>{
+    const d=new Date(m.time),dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    return'<div class=memo-item><div class=memo-item-time>'+dateStr+' <span style="float:right;color:#d49090;cursor:pointer" onclick="event.stopPropagation();deleteMemo(\''+m.id+'\')">删除</span></div>'+m.text.replace(/</g,'&lt;')+'</div>'}).join('')}
+function addMemo(){const t=document.getElementById('memo').value.trim();if(!t)return;
+  const id=todayKey()+'T'+Date.now();
+  memos.push({id,text:t,time:new Date().toISOString()});document.getElementById('memo').value='';
+  document.getElementById('memo-btn').style.display='none';
+  document.getElementById('memo-count').textContent='存稿 '+memos.length+' 条';
+  const s=document.getElementById('memo-saved');s.className='memo-saved visible';
+  setTimeout(()=>s.className='memo-saved',2000);
+  incLog('memos');save();document.getElementById('stat-memos').textContent=memos.length;
+  showUndo('已存稿',()=>{memos=memos.filter(m=>m.id!==id);decLog('memos');save();
+    document.getElementById('memo-count').textContent='存稿 '+memos.length+' 条';document.getElementById('stat-memos').textContent=memos.length})}
+
+let altNames=['爬格子 10 分钟','拿哑铃练一组','写文章的一段'],altCooldown={};
+function haptic(){try{navigator.vibrate(10)}catch(e){}}
+function altAction(idx){if(altCooldown[idx])return;altCooldown[idx]=true;setTimeout(()=>altCooldown[idx]=false,2000);
+  const name=altNames[idx]||'替代动作';haptic();incLog('urge');document.getElementById('stat-urges').textContent=readLog('urge');
+  showUndo(name+' · 冲动已记录',()=>{decLog('urge');document.getElementById('stat-urges').textContent=readLog('urge')})}
+function editAlt(idx){
+  const row=document.getElementById('alt-row-'+idx),label=document.getElementById('alt-label-'+idx);
+  const current=altNames[idx]||'';
+  row.innerHTML='<input class="alt-edit-input" id="alt-edit-'+idx+'" value="'+current.replace(/"/g,'&quot;')+'"><button class="edit-action-btn" onclick="saveAltEdit('+idx+')" style="color:var(--on);border-color:var(--on)">✓</button>';
+  const inp=document.getElementById('alt-edit-'+idx);inp.focus();inp.select();
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')saveAltEdit(idx)})}
+function saveAltEdit(idx){
+  const inp=document.getElementById('alt-edit-'+idx);if(!inp)return;
+  altNames[idx]=inp.value.trim()||altNames[idx];saveCustom();
+  const row=document.getElementById('alt-row-'+idx);
+  row.innerHTML='<button class="alt-btn" id="alt-btn-'+idx+'" onclick="altAction('+idx+')"><span class="alt-icon">🎸</span><span class="alt-label" id="alt-label-'+idx+'">'+altNames[idx].replace(/"/g,'&quot;')+'</span></button><button class="edit-action-btn" onclick="editAlt('+idx+')" aria-label="编辑">✎</button>';
+  // Restore correct emoji
+  const emojis=['🎸','🏋️','✍️'];
+  document.getElementById('alt-label-'+idx).parentElement.querySelector('.alt-icon').textContent=emojis[idx]||'🎸';
+}
+
+function updateSepDay(){
+  const n=new Date(),day=n.getDay(),isSep=(day===sSepDay);
+  const ind=document.getElementById('sep-indicator'),dot=document.getElementById('sep-dot'),text=document.getElementById('sep-text'),sub=document.getElementById('sep-sub'),names=['周日','周一','周二','周三','周四','周五','周六'];
+  if(isSep){ind.className='sep-indicator on';dot.className='sep-dot on';text.textContent='分离日 · 什么都不碰';sub.textContent='不点头像 · 不听歌 · 不翻记录'}
+  else{ind.className='sep-indicator off';dot.className='sep-dot off';text.textContent='今天不是分离日';
+    const d=(sSepDay+7-day)%7||7;sub.textContent='下个分离日：'+d+' 天后（'+names[sSepDay]+'）'}}
+
+let erpLock=false;
+function confirmERP(){const inp=document.getElementById('worst-input');if(!inp.value.trim()||erpLock)return;
+  erpLock=true;incLog('erp',{text:inp.value,time:new Date().toISOString()});const t=readTotal('erp');
+  document.getElementById('worst-count').textContent='练习 '+t+' 次';
+  const erpBtn=document.getElementById('erp-btn');if(erpBtn)erpBtn.style.display='none';
+  const prev=inp.value;inp.value='';erpLock=false;
+  showUndo('ERP 练习已记录',()=>{decLog('erp');document.getElementById('worst-count').textContent='练习 '+readTotal('erp')+' 次';inp.value=prev})}
+document.getElementById('worst-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){confirmERP();e.preventDefault()}});
+
+
+function saveRestructure(){
+  const a=document.getElementById('auto-thought').value.trim(),b=document.getElementById('balanced-thought').value.trim();
+  if(!a||!b){T('两行都要填');return}incLog('restructure',{auto:a,balanced:b,time:new Date().toISOString()});const t=readTotal('restructure');
+  document.getElementById('restructure-count').textContent='重构 '+t+' 次';
+  const pa=document.getElementById('auto-thought').value,pb=document.getElementById('balanced-thought').value;
+  document.getElementById('auto-thought').value='';document.getElementById('balanced-thought').value='';document.getElementById('rest-btn').style.display='none';
+  showUndo('重构已保存',()=>{decLog('restructure');document.getElementById('restructure-count').textContent='重构 '+readTotal('restructure')+' 次';document.getElementById('auto-thought').value=pa;document.getElementById('balanced-thought').value=pb})}
+
+function toggleHelp(e,id){try{e.stopPropagation();
+  const text=document.getElementById(id),btn=e.target.closest('.help-btn'),open=text.classList.contains('open');
+  document.querySelectorAll('.help-text.open').forEach(t=>t.classList.remove('open'));
+  document.querySelectorAll('.help-btn.on').forEach(b=>b.classList.remove('on'));
+  if(!open){text.classList.add('open');btn.classList.add('on')}}catch(err){console.log('help:',err)}}
+document.addEventListener('click',function(e){if(!e.target.closest('.help-btn')&&!e.target.closest('.help-text')){
+  document.querySelectorAll('.help-text.open').forEach(t=>t.classList.remove('open'));
+  document.querySelectorAll('.help-btn.on').forEach(b=>b.classList.remove('on'))}});
+
+function loadSettings(){
+  try{const r=localStorage.getItem(SK_SET);if(!r)return;const d=JSON.parse(r);
+    sBoxH=d.boxH??22;sBoxM=d.boxM??0;sBoxDur=d.boxDur??30;sSepDay=d.sepDay??0;sBackupDays=d.backupDays??7;
+    document.getElementById('set-hour').value=sBoxH;document.getElementById('set-min').value=sBoxM;
+    document.getElementById('set-dur').value=sBoxDur;document.getElementById('set-sep').value=sSepDay;
+    document.getElementById('set-backup-days').value=sBackupDays;}catch(e){}}
+function saveSettings(){
+  sBoxH=parseInt(document.getElementById('set-hour').value)||22;sBoxM=parseInt(document.getElementById('set-min').value)||0;
+  sBoxDur=parseInt(document.getElementById('set-dur').value)||30;sSepDay=parseInt(document.getElementById('set-sep').value)||0;
+  sBackupDays=parseInt(document.getElementById('set-backup-days').value)||0;
+  localStorage.setItem(SK_SET,JSON.stringify({boxH:sBoxH,boxM:sBoxM,boxDur:sBoxDur,sepDay:sSepDay,backupDays:sBackupDays}));
+  document.getElementById('settings-panel').classList.remove('open');updateTimer();updateSepDay();checkBackupLock();T('设置已保存')}
+function toggleSettings(){document.getElementById('settings-panel').classList.toggle('open')}
+function toggleAbout(){const b=document.getElementById('about-body'),a=document.getElementById('about-arrow');b.classList.toggle('open');a.classList.toggle('open')}
+function openAbout(){
+  switchTab('settings');
+  const b=document.getElementById('about-body'),a=document.getElementById('about-arrow');
+  if(!b.classList.contains('open')){b.classList.add('open');a.classList.add('open')}
+  setTimeout(()=>{document.getElementById('about-body').scrollIntoView({behavior:'smooth',block:'start'})},100)
+}
+
+function copyReport(){
+  const raw=localStorage.getItem(SK),data=raw?JSON.parse(raw):{},log=data.log||{};
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);
+    const key=d.toISOString().slice(0,10),entry=log[key]||{};
+    days.push({date:key,dayOfWeek:['日','一','二','三','四','五','六'][d.getDay()],
+      urge:entry.urge||0,memos:entry.memos||0,erp:entry.erp||0,restructure:entry.restructure||0});}
+  const start=days[0].date,end=days[6].date;
+  let report='凌晨自控 · 周报\n'+start+' ~ '+end+'\n\n';
+  report+='日期          冲动 存稿 ERP 重构\n';
+  days.forEach(d=>{report+=d.date.slice(5)+' ('+d.dayOfWeek+')  '+String(d.urge).padStart(2)+'   '+String(d.memos).padStart(2)+'   '+String(d.erp).padStart(2)+'  '+String(d.restructure).padStart(2)+'\n'});
+  const tot=days.reduce((a,d)=>({urge:a.urge+d.urge,memos:a.memos+d.memos,erp:a.erp+d.erp,restructure:a.restructure+d.restructure}),{urge:0,memos:0,erp:0,restructure:0});
+  report+='\n本周合计 冲动 '+tot.urge+' · 存稿 '+tot.memos+' · ERP '+tot.erp+' · 重构 '+tot.restructure;
+  navigator.clipboard.writeText(report).then(()=>T('周报已复制到剪贴板')).catch(()=>T('复制失败，请手动选择'))}
+function exportData(){
+  const d=currentData();d._exportedAt=new Date().toISOString();d.consecutiveDays=consecutiveDays;d.memos=memos;
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;const dt=new Date();
+  a.download='凌晨自控-'+dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate()+'.json';a.click();
+  URL.revokeObjectURL(u);localStorage.setItem(SK+'_lb',new Date().toISOString());T('JSON 已下载')}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){
+    try{let d=JSON.parse(ev.target.result);
+      if(!d.v||d.v<2)d=migrateV2(d);
+      memos=d.memos||[];consecutiveDays=d.consecutiveDays||0;
+      d.date=todayKey();d.memos=memos;d.consecutiveDays=consecutiveDays;saveRaw(d);
+      updateDashboard();updateSepDay();checkBackupLock();T('恢复成功。')}catch(x){T('文件损坏')}};r.readAsText(f)}
+function checkBackupLock(){
+  if(sBackupDays<=0)return;const lb=localStorage.getItem(SK+'_lb'),lock=document.getElementById('backup-lock'),msg=document.getElementById('backup-lock-msg');
+  const raw=localStorage.getItem(SK),data=raw?JSON.parse(raw):{},firstUsed=data.lastCheckin||data.date||null;
+  const daysUsed=firstUsed?Math.floor((Date.now()-new Date(firstUsed).getTime())/864e5):0;
+  if(daysUsed<sBackupDays){lock.style.display='none';return}
+  if(!lb){lock.style.display='flex';msg.textContent='已使用 '+daysUsed+' 天，尚未备份。数据只存在手机本地，清除缓存就全没了。请导出备份以解锁。';return}
+  const daysSince=Math.floor((Date.now()-new Date(lb).getTime())/864e5);
+  if(daysSince>=sBackupDays){lock.style.display='flex';msg.textContent='上次备份 '+daysSince+' 天前。超过 '+sBackupDays+' 天未备份，已锁定。导出即可解锁。';return}
+  lock.style.display='none'}
+function unlockViaBackup(){exportData();checkBackupLock();T('备份完成，功能已解锁。')}
+function checkBackupHint(){
+  const lb=localStorage.getItem(SK+'_lb'),hint=document.getElementById('backup-hint');
+  if(!lb){hint.textContent='⚠️ 还没有备份过。现在就导出一份。';return}
+  const days=Math.floor((Date.now()-new Date(lb).getTime())/864e5);
+  hint.textContent=days>=sBackupDays?'⚠️ 上次备份 '+days+' 天前。建议现在备份。':'✅ 上次备份 '+days+' 天前'}
+
+function toggleLog(){
+  const wrap=document.getElementById('log-table-wrap'),btn=document.getElementById('log-toggle');
+  if(wrap.style.display==='none'){wrap.style.display='block';btn.textContent='收起记录 ▲';renderLog()}else{wrap.style.display='none';btn.textContent='展开记录 ▼'}}
+function renderLog(){
+  const wrap=document.getElementById('log-table-wrap'),log=currentData().log||{};
+  const dates=Object.keys(log).sort().reverse().slice(0,30);
+  if(!dates.length){wrap.innerHTML='<div class=log-empty>还没有记录。开始使用后这里会出现每日数据。</div>';return}
+  let html='<table class=log-table><tr><th class=log-date>日期</th><th>冲动</th><th>存稿</th><th>ERP</th><th>重构</th></tr>';
+  dates.forEach(k=>{const e=log[k],d=k.slice(5);html+='<tr class=log-row><td class=log-date>'+d+'</td><td>'+e.urge+'</td><td>'+e.memos+'</td><td>'+e.erp+'</td><td>'+e.restructure+'</td></tr>'});
+  html+='</table>';wrap.innerHTML=html}
+function renderHeatmap(){
+  try{const el=document.getElementById('heatmap');if(!el)return;
+  const today=new Date(),dow=today.getDay(),daysSinceMon=dow===0?6:dow-1;
+  const mon=new Date(today.getFullYear(),today.getMonth(),today.getDate()-daysSinceMon);
+  const dayLabels=['一','二','三','四','五','六','日'],log=currentData().log||{};
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
+    const k=d.toISOString().slice(0,10),entry=log[k]||{};
+    days.push({label:dayLabels[i],val:entry.urge||0})}
+  const max=Math.max(1,...days.map(d=>d.val));
+  const html=days.map(d=>{let lvl=0;if(d.val>0){lvl=Math.ceil((d.val/max)*4)}
+    return'<div class=heat-col><div class="heat-dot l'+lvl+'" title="'+d.val+' 次冲动"></div><div class=heat-label>'+d.label+'</div></div>'}).join('');
+  el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
+function updateDashboard(){
+  try{
+  document.getElementById('stat-urges').textContent=readLog('urge');
+  document.getElementById('stat-memos').textContent=memos.length;
+  document.getElementById('worst-count').textContent='练习 '+readTotal('erp')+' 次';
+  document.getElementById('restructure-count').textContent='重构 '+readTotal('restructure')+' 次';
+  const today=todayKey(),d=currentData();
+  if(d.lastCheckin){const diff=Math.floor((Date.now()-new Date(d.lastCheckin))/(864e5));
+    consecutiveDays=(diff===1)?consecutiveDays+1:(diff>1?1:consecutiveDays)}else consecutiveDays=1;
+  document.getElementById('stat-days').textContent=consecutiveDays;
+  d.lastCheckin=today;d.consecutiveDays=consecutiveDays;saveRaw(d);renderHeatmap()}catch(e){console.log('dashboard:',e)}}
+
+let lastUndo=null;
+function showUndo(msg,fn){lastUndo=fn;document.getElementById('undo-msg').textContent=msg;const b=document.getElementById('undo-bar');b.className='undo-bar show';setTimeout(()=>{if(lastUndo===fn)b.className='undo-bar'},5000)}
+function undoLast(){if(lastUndo){lastUndo();lastUndo=null;document.getElementById('undo-bar').className='undo-bar';T('已撤销')}}
+let clearTodayLock=false;
+
+function clearToday(){if(!clearTodayLock){clearTodayLock=true;document.getElementById('clear-today-btn').textContent='再次确认';document.getElementById('clear-today-btn').style.background='rgba(176,80,80,.2)';setTimeout(()=>{clearTodayLock=false;document.getElementById('clear-today-btn').textContent='清空今日';document.getElementById('clear-today-btn').style.background='transparent'},4000);return}
+  const d=currentData();d.log[todayKey()]={urge:0,memos:0,erp:0,restructure:0};saveRaw(d);
+  clearTodayLock=false;document.getElementById('clear-today-btn').textContent='清空今日';document.getElementById('clear-today-btn').style.background='transparent';updateDashboard();T('今日统计已清零')}
+function clearAllStep1(){document.getElementById('clear-all-btn').style.display='none';document.getElementById('clear-all-confirm').style.display='block'}
+function clearAll(){memos=[];consecutiveDays=0;
+  localStorage.removeItem(SK);document.getElementById('clear-all-confirm').style.display='none';
+  document.getElementById('clear-all-btn').style.display='inline-block';
+  document.getElementById('memo-count').textContent='存稿 0 条';document.getElementById('memo').value='';
+  updateDashboard();T('全部数据已清空')}
+const MAX_WL=10;
+let wlNames=['录好了一首新歌','拍到了真的太阳雨','路过小口大口 / 老婆大人'];
+function renderWhitelist(){
+  const list=document.getElementById('whitelist-list');list.innerHTML='';
+  wlNames.forEach((name,i)=>{
+    const div=document.createElement('div');div.className='whitelist-item';
+    div.innerHTML='<div class="whitelist-dot"></div><input class="input-field wl-input" data-idx="'+i+'" value="'+name.replace(/"/g,'&quot;')+'" style="margin:0;border:none;background:transparent;padding:0;font-size:14px;color:#a1a1aa"><button class="wl-del-btn" data-idx="'+i+'" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:2px 6px;opacity:.5;transition:opacity .2s" aria-label="删除">✕</button>';
+    list.appendChild(div);
+  });
+  document.getElementById('wl-add-btn').style.display=wlNames.length>=MAX_WL?'none':'block';
+  // Bind events
+  document.querySelectorAll('.wl-input').forEach(inp=>inp.addEventListener('input',function(){
+    wlNames[parseInt(this.dataset.idx)]=this.value;saveCustom()}));
+  document.querySelectorAll('.wl-del-btn').forEach(btn=>btn.addEventListener('click',function(e){
+    e.stopPropagation();wlNames.splice(parseInt(this.dataset.idx),1);saveCustom();renderWhitelist()}));
+}
+function addWhitelist(){if(wlNames.length>=MAX_WL)return;wlNames.push('');saveCustom();renderWhitelist();
+  const inputs=document.querySelectorAll('.wl-input');if(inputs.length){const last=inputs[inputs.length-1];last.focus()}}
+function loadCustom(){
+  try{const r=localStorage.getItem(SK_SET);if(r){const d=JSON.parse(r);
+    if(d.wlNames){wlNames=d.wlNames}
+    if(d.altNames){altNames=d.altNames;for(let i=0;i<3;i++){const el=document.getElementById('alt-label-'+i);if(el)el.textContent=altNames[i]||''}}}
+  }catch(e){}
+  renderWhitelist()}
+function saveCustom(){
+  const d=JSON.parse(localStorage.getItem(SK_SET)||'{}');d.wlNames=wlNames;d.altNames=altNames;
+  localStorage.setItem(SK_SET,JSON.stringify(d))}
+try{
+function updateStorage(){
+  try{let bytes=0;for(let i=0;i<localStorage.length;i++){bytes+=localStorage.key(i).length*2+localStorage.getItem(localStorage.key(i)).length*2}
+  const pct=Math.min(100,Math.round((bytes/5242880)*100));
+  document.getElementById('storage-bar').style.width=pct+'%';
+  document.getElementById('storage-label').textContent='已用 '+Math.round(bytes/1024)+' KB / 5 MB ('+pct+'%)';
+  if(pct>80)document.getElementById('storage-bar').style.background='#b05050'}catch(e){}}
+load();loadCustom();loadSettings();updateTimer();updateSepDay();updateDashboard();renderHeatmap();checkBackupLock();checkBackupHint();updateStorage();
+}catch(e){console.log('init error:',e);alert('初始化失败，请刷新页面。错误：'+e.message)}
+setInterval(updateTimer,30000);setInterval(updateSepDay,60000);
+</script>
+</body>
+</html>

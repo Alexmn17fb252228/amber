@@ -1,0 +1,17 @@
+{
+  "name": "琥珀",
+  "short_name": "琥珀",
+  "description": "不戒掉想念。只把想念凝成琥珀。",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIHJ4PSIzNiIgZmlsbD0iIzBhMGEwYyIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjQ4IiBmaWxsPSIjZjBhNTRhIiBvcGFjaXR5PSIwLjkiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjkwIiByPSI1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjBhNTRhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMyIvPjxjaXJjbGUgY3g9IjY4IiBjeT0iNzIiIHI9IjYiIGZpbGw9IiMwYTBhMGMiIG9wYWNpdHk9IjAuMTUiLz48L3N2Zz4=",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ]
+}
