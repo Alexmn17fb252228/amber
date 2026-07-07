@@ -583,11 +583,14 @@ function updateDashboard(){
   document.getElementById('memo-count').textContent='存稿 '+memos.length+' 条';
   document.getElementById('worst-count').textContent='练习 '+readTotal('erp')+' 次';
   document.getElementById('restructure-count').textContent='重构 '+readTotal('restructure')+' 次';
-  const today=todayKey(),d=currentData();
+  const d=currentData(),prev=d.consecutiveDays||0,today=todayKey();
   if(d.lastCheckin){const diff=Math.floor((Date.now()-new Date(d.lastCheckin))/(864e5));
     consecutiveDays=(diff===1)?consecutiveDays+1:(diff>1?1:consecutiveDays)}else consecutiveDays=1;
   document.getElementById('stat-days').textContent=consecutiveDays;
-  d.lastCheckin=today;d.consecutiveDays=consecutiveDays;saveRaw(d);renderHeatmap()}catch(e){console.log('dashboard:',e)}}
+  if(consecutiveDays!==prev){if(consecutiveDays===7)setTimeout(()=>T('🟠 连续 7 天。一周了。'),600);
+    else if(consecutiveDays===30)setTimeout(()=>T('🟠 连续 30 天。一个月了。'),600);
+    else if(consecutiveDays===100)setTimeout(()=>T('🟠 连续 100 天。'),600)}
+  d.date=today;d.lastCheckin=today;d.consecutiveDays=consecutiveDays;saveRaw(d);renderHeatmap()}catch(e){console.log('dashboard:',e)}}
 
 let lastUndo=null;
 function showUndo(msg,fn){lastUndo=fn;document.getElementById('undo-msg').textContent=msg;const b=document.getElementById('undo-bar');b.className='undo-bar show';setTimeout(()=>{if(lastUndo===fn)b.className='undo-bar'},5000)}
