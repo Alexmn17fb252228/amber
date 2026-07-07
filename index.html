@@ -534,6 +534,7 @@ function updateDashboard(){
   try{
   document.getElementById('stat-urges').textContent=readLog('urge');
   document.getElementById('stat-memos').textContent=memos.length;
+  document.getElementById('memo-count').textContent='存稿 '+memos.length+' 条';
   document.getElementById('worst-count').textContent='练习 '+readTotal('erp')+' 次';
   document.getElementById('restructure-count').textContent='重构 '+readTotal('restructure')+' 次';
   const today=todayKey(),d=currentData();
