@@ -552,10 +552,10 @@ function renderHeatmap(){
   for(let i=0;i<7;i++){
     const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
     const k=d.toISOString().slice(0,10),entry=log[k]||{};
-    days.push({label:dayLabels[i],val:entry.urge||0})}
+    days.push({label:dayLabels[i],val:(entry.urge||0)+(entry.memos||0)+(entry.erp||0)+(entry.restructure||0)})}
   const max=Math.max(1,...days.map(d=>d.val));
   const html=days.map(d=>{let lvl=0;if(d.val>0){lvl=Math.ceil((d.val/max)*4)}
-    return'<div class=heat-col><div class="heat-dot l'+lvl+'" title="'+d.val+' 次冲动"></div><div class=heat-label>'+d.label+'</div></div>'}).join('');
+    return'<div class=heat-col><div class="heat-dot l'+lvl+'" title="'+d.val+' 次活动"></div><div class=heat-label>'+d.label+'</div></div>'}).join('');
   el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
 function updateDashboard(){
   try{
