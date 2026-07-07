@@ -572,7 +572,7 @@ function renderHeatmap(){
     const n=Math.floor(total/4);
     let col='';
     for(let j=0;j<n;j++)col+='<div class=heat-amber></div>';
-    col+='<div class=heat-label'+(isToday?' heat-today':'')+'>'+dayLabels[i]+'</div>';
+    col+='<div class="heat-label'+(isToday?' heat-today':'')+'">'+dayLabels[i]+'</div>';
     html+='<div class=heat-col>'+col+'</div>';
   }
   el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
