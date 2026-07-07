@@ -60,12 +60,12 @@ const server = http.createServer((req, res) => {
   if (colCount === 7) pass('1. 渲染 7 列');
   else fail('1. 渲染 7 列', `实际 ${colCount} 列`);
 
-  // --- Test 2: Each column has a ghost dot ---
-  const ghostCount = await page.evaluate(() => {
-    return document.querySelectorAll('#heatmap .heat-ghost').length;
+  // --- Test 2: Each column has a label ---
+  const labelCount = await page.evaluate(() => {
+    return document.querySelectorAll('#heatmap .heat-label').length;
   });
-  if (ghostCount === 7) pass('2. 每列有 1 个幽灵点');
-  else fail('2. 每列有 1 个幽灵点', `实际 ${ghostCount} 个`);
+  if (labelCount === 7) pass('2. 每列有 1 个标签');
+  else fail('2. 每列有 1 个标签', `实际 ${labelCount} 个`);
 
   // --- Test 3: Amber dot count per column ---
   // activities: [0,3,4,7,8,11,0] → expected dots: [0,0,1,1,2,2,0]
@@ -112,8 +112,8 @@ const server = http.createServer((req, res) => {
     cols.forEach(col => { total += col.querySelectorAll('.heat-amber').length; });
     return total;
   });
-  if (allZeroDots === 0) pass('5. 全0活动 → 全幽灵点');
-  else fail('5. 全0活动 → 全幽灵点', `实际有 ${allZeroDots} 个琥珀点`);
+  if (allZeroDots === 0) pass('5. 全0活动 → 无琥珀点，仅标签');
+  else fail('5. 全0活动 → 无琥珀点', `实际有 ${allZeroDots} 个琥珀点`);
 
   // --- Test 6: High activity (20 activities = 5 dots) ---
   await page.evaluate(() => {
@@ -153,17 +153,13 @@ const server = http.createServer((req, res) => {
     const col = document.querySelector('#heatmap .heat-col');
     if (!col) return null;
     const children = Array.from(col.children);
-    // Expected: amber dots (from top), ghost dot (bottom), label (bottom)
-    const classes = children.map(c => c.className);
-    // count amber dots and ghost dot
     const amberCount = children.filter(c => c.classList.contains('heat-amber')).length;
-    const ghostCount = children.filter(c => c.classList.contains('heat-ghost')).length;
     const labelCount = children.filter(c => c.classList.contains('heat-label')).length;
-    return { amberCount, ghostCount, labelCount, order: classes };
+    return { amberCount, labelCount, order: children.map(c => c.className) };
   });
 
-  if (structure && structure.ghostCount === 1 && structure.labelCount === 1) {
-    pass('7. 列结构正确：琥珀点 + 幽灵点 + 标签');
+  if (structure && structure.amberCount >= 0 && structure.labelCount === 1) {
+    pass('7. 列结构正确：琥珀点 + 标签');
   } else {
     fail('7. 列结构', JSON.stringify(structure));
   }

@@ -37,11 +37,10 @@ h1::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
 .stat-card{background:var(--surface);border-radius:var(--radius-sm);padding:14px 6px}
 .stat-val{font-size:28px;font-weight:250;color:var(--accent);letter-spacing:-0.02em;line-height:1.1}
-.heatmap{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-top:14px;padding-top:18px;border-top:1px solid var(--border);min-height:100px}
+.heatmap{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-top:14px;padding-top:18px;border-top:1px solid var(--border);min-height:72px}
 .heat-col{display:flex;flex-direction:column;align-items:center;gap:2px;width:32px}
-.heat-ghost{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);flex-shrink:0;margin:3px 0}
 .heat-amber{width:10px;height:10px;border-radius:50%;background:var(--accent);opacity:.85;flex-shrink:0}
-.heat-label{font-size:10px;color:var(--dim);text-align:center;width:32px;margin-top:6px;flex-shrink:0}
+.heat-label{font-size:10px;color:var(--dim);text-align:center;width:32px;margin-top:4px;flex-shrink:0}
 .log-table{width:100%;font-size:12px;border-collapse:collapse}.log-table th,.log-table td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}.log-table th{color:var(--dim);font-weight:500;font-size:11px}.log-table td{color:var(--text)}.log-table .log-date{text-align:left;color:var(--dim);white-space:nowrap}.log-row:hover{background:rgba(255,255,255,.02)}.log-empty{color:var(--dim);font-size:13px;text-align:center;padding:16px}.log-toggle{font-size:13px;color:var(--accent);cursor:pointer;margin-top:12px;display:inline-block}
 .stat-label{font-size:11px;color:var(--dim);margin-top:4px}
 .alt-btn{display:flex;align-items:center;gap:12px;width:100%;padding:15px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:8px;-webkit-tap-highlight-color:transparent}
@@ -552,7 +551,7 @@ function renderHeatmap(){
     const n=Math.floor(total/4);
     let col='';
     for(let j=0;j<n;j++)col+='<div class=heat-amber></div>';
-    col+='<div class=heat-ghost></div><div class=heat-label>'+dayLabels[i]+'</div>';
+    col+='<div class=heat-label>'+dayLabels[i]+'</div>';
     html+='<div class=heat-col>'+col+'</div>';
   }
   el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
