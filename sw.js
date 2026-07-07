@@ -1,5 +1,5 @@
-const CACHE = 'liming-v14';
-const ASSETS = ['/', 'index.html', 'manifest.json'];
+const CACHE = 'liming-v15';
+const ASSETS = ['./', 'index.html', 'manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
