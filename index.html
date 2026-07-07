@@ -563,11 +563,12 @@ function renderHeatmap(){
   const mon=new Date(today.getFullYear(),today.getMonth(),today.getDate()-daysSinceMon);
   const dayLabels=['一','二','三','四','五','六','日'],log=currentData().log||{};
   let html='';
+  const todayLocal=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   for(let i=0;i<7;i++){
     const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
-    const k=d.toISOString().slice(0,10),entry=log[k]||{};
+    const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),entry=log[k]||{};
     const total=(entry.urge||0)+(entry.memos||0)+(entry.erp||0)+(entry.restructure||0);
-    const isToday=k===today.toISOString().slice(0,10);
+    const isToday=k===todayLocal;
     const n=Math.floor(total/4);
     let col='';
     for(let j=0;j<n;j++)col+='<div class=heat-amber></div>';
