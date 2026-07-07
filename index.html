@@ -244,6 +244,13 @@ textarea.input-field{min-height:88px;resize:vertical}
     <div class="card-header"><span class="card-title">备份 / 恢复</span></div>
     <div class="hint">数据存在手机本地。每周备份到 iCloud 或文件 App。</div>
     <div class="inline-row"><button class="btn" onclick="exportData()">导出 JSON</button><button class="btn" onclick="document.getElementById('import-file').click()">导入恢复</button></div>
+    <div id="import-confirm" style="display:none;margin-top:10px;padding:12px;background:rgba(240,165,74,.08);border-radius:8px;font-size:13px;line-height:1.7;color:var(--text)">
+      <div id="import-confirm-msg"></div>
+      <div class="inline-row" style="margin-top:10px">
+        <button class="btn btn-primary" id="import-confirm-btn" onclick="confirmImport()">确认导入</button>
+        <button class="btn" onclick="cancelImport()">取消</button>
+      </div>
+    </div>
     <div class="inline-row" style="margin-top:8px"><button class="btn" onclick="copyReport()">📋 复制周报</button></div>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
     <div style="margin-top:10px" class="tag" id="backup-hint"></div>
@@ -483,13 +490,33 @@ function exportData(){
   const a=document.createElement('a');a.href=u;const dt=new Date();
   a.download='凌晨自控-'+dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate()+'.json';a.click();
   URL.revokeObjectURL(u);localStorage.setItem(SK+'_lb',new Date().toISOString());T('JSON 已下载')}
+let _importPending=null;
 function importData(e){
   const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){
     try{let d=JSON.parse(ev.target.result);
       if(!d.v||d.v<2)d=migrateV2(d);
-      memos=d.memos||[];consecutiveDays=d.consecutiveDays||0;
-      d.date=todayKey();d.memos=memos;d.consecutiveDays=consecutiveDays;saveRaw(d);
-      updateDashboard();updateSepDay();checkBackupLock();T('恢复成功。')}catch(x){T('文件损坏')}};r.readAsText(f)}
+      _importPending=d;
+      const exportDate=d._exportedAt?new Date(d._exportedAt).toLocaleString('zh-CN'):'未知日期';
+      const fileMemos=(d.memos||[]).length,curMemos=memos.length;
+      const logDays=Object.keys(d.log||{}).length,curLogDays=Object.keys(currentData().log||{}).length;
+      const warn=exportDate==='未知日期'?'⚠️ 此文件缺少导出日期，可能不是琥珀导出的 JSON。':(new Date(d._exportedAt)<new Date(Date.now()-864e5*7)?'⚠️ 此备份来自 '+exportDate+'，已超过一周。确认这是你想恢复的版本？':'');
+      const daysAgo=exportDate!=='未知日期'?Math.floor((Date.now()-new Date(d._exportedAt))/(864e5)):null;
+      let msg='<b>即将覆盖当前数据</b><br>导入文件：'+fileMemos+' 条存稿，'+logDays+' 天记录';
+      if(exportDate!=='未知日期')msg+='<br>备份日期：'+exportDate+(daysAgo!==null?'（'+(daysAgo===0?'今天':daysAgo+' 天前')+'）':'');
+      msg+='<br>当前数据：'+curMemos+' 条存稿，'+curLogDays+' 天记录';
+      if(warn)msg+='<br><br><span style="color:#d49090">'+warn+'</span>';
+      else msg+='<br><br><span style="color:var(--dim)">导入后当前数据将被替换。建议先导出一份备份。</span>';
+      document.getElementById('import-confirm-msg').innerHTML=msg;
+      document.getElementById('import-confirm').style.display='block';
+    }catch(x){T('文件损坏或格式不匹配')}};r.readAsText(f)}
+function confirmImport(){
+  if(!_importPending)return;const d=_importPending;_importPending=null;
+  memos=d.memos||[];consecutiveDays=d.consecutiveDays||0;
+  d.date=todayKey();d.memos=memos;d.consecutiveDays=consecutiveDays;saveRaw(d);
+  updateDashboard();updateSepDay();checkBackupLock();T('恢复成功');
+  document.getElementById('import-confirm').style.display='none';
+  document.getElementById('import-file').value='';}
+function cancelImport(){_importPending=null;document.getElementById('import-confirm').style.display='none';document.getElementById('import-file').value='';}
 function checkBackupLock(){
   if(sBackupDays<=0)return;const lb=localStorage.getItem(SK+'_lb'),lock=document.getElementById('backup-lock'),msg=document.getElementById('backup-lock-msg');
   const raw=localStorage.getItem(SK),data=raw?JSON.parse(raw):{},firstUsed=data.lastCheckin||data.date||null;

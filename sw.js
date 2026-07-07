@@ -1,4 +1,4 @@
-const CACHE = 'liming-v16';
+const CACHE = 'liming-v17';
 const ASSETS = ['./', 'index.html', 'manifest.json'];
 
 self.addEventListener('install', e => {
