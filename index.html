@@ -41,6 +41,7 @@ h1::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--acc
 .heat-col{display:flex;flex-direction:column;align-items:center;gap:2px;width:32px}
 .heat-amber{width:10px;height:10px;border-radius:50%;background:var(--accent);opacity:.85;flex-shrink:0}
 .heat-label{font-size:10px;color:var(--dim);text-align:center;width:32px;margin-top:4px;flex-shrink:0}
+.heat-label.heat-today{color:var(--accent);font-weight:600}
 .log-table{width:100%;font-size:12px;border-collapse:collapse}.log-table th,.log-table td{padding:8px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}.log-table th{color:var(--dim);font-weight:500;font-size:11px}.log-table td{color:var(--text)}.log-table .log-date{text-align:left;color:var(--dim);white-space:nowrap}.log-row:hover{background:rgba(255,255,255,.02)}.log-empty{color:var(--dim);font-size:13px;text-align:center;padding:16px}.log-toggle{font-size:13px;color:var(--accent);cursor:pointer;margin-top:12px;display:inline-block}
 .stat-label{font-size:11px;color:var(--dim);margin-top:4px}
 .alt-btn{display:flex;align-items:center;gap:12px;width:100%;padding:15px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:all .2s;font-family:inherit;margin-bottom:8px;-webkit-tap-highlight-color:transparent}
@@ -123,6 +124,14 @@ textarea.input-field{min-height:88px;resize:vertical}
     <div class="card-header"><span class="card-title">时间盒子</span><span class="card-header-right"><span class="ring-num">RING 2</span><button class="help-btn" onclick="toggleHelp(event,'help2')">?</button></span></div>
     <div class="help-text" id="help2">怎么用：在偏好设置里设定每天想她的时间窗口（默认 22:00–22:30）。时间到了盒子自动打开，结束后自动关上。白天突然想到她——告诉自己「晚上再想」。作用：把无边界的内耗关进一个有边界的盒子。</div>
     <div class="timer-box"><div class="timer-status" id="timer-status">距离十点 — 盒子还没开门</div><div class="timer-clock" id="timer-clock">--:--</div><div style="margin-top:14px"><button class="btn btn-primary" id="open-box-btn" style="display:none">可以想她了 · 开门</button></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header" onclick="toggleWlPreview()" style="cursor:pointer">
+      <span class="card-title">发之前看一眼</span>
+      <span class="card-header-right"><span class="ring-num">RING 3</span><button class="help-btn" onclick="event.stopPropagation();toggleHelp(event,'help3')">?</button><span id="wl-preview-summary" style="font-size:11px;color:var(--dim);margin-left:4px"></span></span>
+    </div>
+    <div class="help-text" id="help3">怎么用：想给她发消息之前，先看一眼这里。属于其中一种吗？不属于——关掉微信。作用：把发消息从「我想她了」变成「我有新东西给她」，质量换数量。点击文字编辑，点击 ✕ 删除。最多 10 条。</div>
+    <div class="about-body" id="wl-preview-body"></div>
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">今日统计</span></div>
@@ -230,8 +239,8 @@ textarea.input-field{min-height:88px;resize:vertical}
     </div>
   </div>
   <div class="card">
-    <div class="card-header"><span class="card-title">白名单触发</span><span class="card-header-right"><span class="ring-num">RING 3</span><button class="help-btn" onclick="toggleHelp(event,'help3')">?</button></span></div>
-    <div class="help-text" id="help3">怎么用：想给她发消息之前，先看一眼这里。属于其中一种吗？不属于——关掉微信。作用：把发消息从「我想她了」变成「我有新东西给她」，质量换数量。点击文字编辑，点击 ✕ 删除。最多 10 条。</div>
+    <div class="card-header"><span class="card-title">白名单触发</span><span class="card-header-right"><span class="ring-num">RING 3</span><button class="help-btn" onclick="toggleHelp(event,'help3s')">?</button></span></div>
+    <div class="help-text" id="help3s">怎么用：想给她发消息之前，先看一眼这里。属于其中一种吗？不属于——关掉微信。作用：把发消息从「我想她了」变成「我有新东西给她」，质量换数量。点击文字编辑，点击 ✕ 删除。最多 10 条。</div>
     <div class="whitelist" id="whitelist-list"></div>
     <button class="btn" id="wl-add-btn" onclick="addWhitelist()" style="width:100%;margin-top:10px;border-style:dashed;color:var(--dim);font-size:13px">+ 添加触发条件</button>
   </div>
@@ -465,6 +474,16 @@ function openAbout(){
   if(!b.classList.contains('open')){b.classList.add('open');a.classList.add('open')}
   setTimeout(()=>{document.getElementById('about-body').scrollIntoView({behavior:'smooth',block:'start'})},100)
 }
+function renderWlPreview(){
+  const summary=document.getElementById('wl-preview-summary'),body=document.getElementById('wl-preview-body');
+  if(!summary||!body)return;
+  const names=wlNames.filter(n=>n&&n.trim());
+  summary.textContent=names.length?names.length+' 条':'空';
+  body.innerHTML=names.length?names.map(n=>'<div style="font-size:12px;color:var(--text);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:50%;background:var(--on);flex-shrink:0;box-shadow:0 0 4px rgba(74,158,74,.4)"></div>'+n.replace(/</g,'&lt;')+'</div>').join(''):'<div style="font-size:12px;color:var(--dim);padding:4px 0">还没有触发条件。在设置页添加。</div>'}
+function toggleWlPreview(){
+  const b=document.getElementById('wl-preview-body');
+  if(b.classList.contains('open')){b.classList.remove('open')}else{renderWlPreview();b.classList.add('open')}
+}
 
 function copyReport(){
   const raw=localStorage.getItem(SK),data=raw?JSON.parse(raw):{},log=data.log||{};
@@ -548,10 +567,11 @@ function renderHeatmap(){
     const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
     const k=d.toISOString().slice(0,10),entry=log[k]||{};
     const total=(entry.urge||0)+(entry.memos||0)+(entry.erp||0)+(entry.restructure||0);
+    const isToday=k===today.toISOString().slice(0,10);
     const n=Math.floor(total/4);
     let col='';
     for(let j=0;j<n;j++)col+='<div class=heat-amber></div>';
-    col+='<div class=heat-label>'+dayLabels[i]+'</div>';
+    col+='<div class=heat-label'+(isToday?' heat-today':'')+'>'+dayLabels[i]+'</div>';
     html+='<div class=heat-col>'+col+'</div>';
   }
   el.innerHTML=html}catch(e){console.log('heatmap:',e)}}
@@ -596,7 +616,8 @@ function renderWhitelist(){
   document.querySelectorAll('.wl-input').forEach(inp=>inp.addEventListener('input',function(){
     wlNames[parseInt(this.dataset.idx)]=this.value;saveCustom()}));
   document.querySelectorAll('.wl-del-btn').forEach(btn=>btn.addEventListener('click',function(e){
-    e.stopPropagation();wlNames.splice(parseInt(this.dataset.idx),1);saveCustom();renderWhitelist()}));
+    e.stopPropagation();wlNames.splice(parseInt(this.dataset.idx),1);saveCustom();renderWhitelist();renderWlPreview()}));
+  renderWlPreview();
 }
 function addWhitelist(){if(wlNames.length>=MAX_WL)return;wlNames.push('');saveCustom();renderWhitelist();
   const inputs=document.querySelectorAll('.wl-input');if(inputs.length){const last=inputs[inputs.length-1];last.focus()}}
@@ -605,7 +626,7 @@ function loadCustom(){
     if(d.wlNames){wlNames=d.wlNames}
     if(d.altNames){altNames=d.altNames;for(let i=0;i<3;i++){const el=document.getElementById('alt-label-'+i);if(el)el.textContent=altNames[i]||''}}}
   }catch(e){}
-  renderWhitelist()}
+  renderWhitelist();renderWlPreview()}
 function saveCustom(){
   const d=JSON.parse(localStorage.getItem(SK_SET)||'{}');d.wlNames=wlNames;d.altNames=altNames;
   localStorage.setItem(SK_SET,JSON.stringify(d))}
